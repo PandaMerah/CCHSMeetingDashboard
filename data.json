@@ -1,0 +1,17 @@
+{
+  "config": {
+    "showLastMinuteSpeech": false,
+    "lastMinuteSpeechText": "CEO SPEECH"
+  },
+  "departments": {
+    "IT Support": {
+      "update": "Finalized the SystmOne configuration.",
+      "question": "Which clinical system was configured?"
+    },
+    "Operations": {
+      "update": "Implemented new patient queuing workflow.",
+      "question": "What new workflow was implemented?"
+    }
+  },
+  "history": []
+}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Meeting Admin Control</title>
+    <style>
+        body { font-family: sans-serif; background: #102141; color: white; padding: 50px; }
+        .container { max-width: 600px; background: rgba(255,255,255,0.1); padding: 30px; border-radius: 10px; margin: auto; }
+        textarea { width: 100%; padding: 10px; box-sizing: border-box; margin-top: 10px; margin-bottom: 20px;}
+        button { background: #93c01f; color: #102141; font-weight: bold; border: none; padding: 15px; cursor: pointer; width: 100%; border-radius: 5px; }
+        .toggle-container { margin-bottom: 20px; font-size: 1.2rem;}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Admin Control Panel</h2>
+        
+        <div class="toggle-container">
+            <input type="checkbox" id="showSpeech" style="transform: scale(1.5); margin-right: 10px;">
+            <label for="showSpeech"><strong>Enable Last Minute Speech Slide</strong></label>
+        </div>
+
+        <label>Speech Content:</label>
+        <textarea id="speechText" rows="4"></textarea>
+
+        <button onclick="updateAdmin()">Push Settings to TV</button>
+        <p id="status"></p>
+    </div>
+
+    <script>
+        // Load current config
+        fetch('/api/data').then(r => r.json()).then(data => {
+            document.getElementById('showSpeech').checked = data.config.showLastMinuteSpeech;
+            document.getElementById('speechText').value = data.config.lastMinuteSpeechText;
+        });
+
+        async function updateAdmin() {
+            const data = {
+                showLastMinuteSpeech: document.getElementById('showSpeech').checked,
+                lastMinuteSpeechText: document.getElementById('speechText').value
+            };
+
+            const response = await fetch('/api/admin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+            document.getElementById('status').innerText = result.message;
+        }
+    </script>
+</body>
+</html>

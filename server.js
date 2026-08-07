@@ -63,7 +63,7 @@ app.post('/api/admin', (req, res) => {
     writeData(data);
     io.emit('dataChanged', data); // Broadcast to TV immediately
     res.send({ message: "Admin settings updated!" });
-});
+}); // <-- Add this missing closing parenthesis and brace
 
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`TV Dashboard: http://localhost:${PORT}`);

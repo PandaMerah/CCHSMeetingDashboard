@@ -9,35 +9,27 @@
 </head>
 <body>
     <div class="app-layout">
-        <!-- Left Navy Sidebar -->
-<div class="sidebar">
-    <div>
-        <div class="brand-header">
-            <!-- White Logo Card with Icon & Styled Text -->
-            <div class="brand-logo-card">
-                <img src="/careclinic-logo.webp" alt="Care Clinics Logo" class="sidebar-logo-icon">
-                <div class="brand-logo-text">
-                    <span class="logo-text-primary">careclinics</span>
-                    <span class="logo-text-secondary">healthcare services</span>
+        <!-- Left Navy Sidebar with Logo, Clock & Date -->
+        <div class="sidebar">
+            <div>
+                <div class="brand-header">
+                    <img src="/careclinic-logo.webp" alt="Care Clinics Logo" class="sidebar-logo">
+                    <div class="brand-subtitle">Weekly Alignment</div>
+                    
+                    <div class="sidebar-clock-container">
+                        <div class="sidebar-time" id="sidebar-time">--:--:--</div>
+                        <div class="sidebar-date" id="sidebar-date">-----, -- ---- ----</div>
+                    </div>
                 </div>
+
+                <!-- Auto-generating Slide Navigation -->
+                <div class="dept-pill-list" id="sidebar-menu"></div>
             </div>
 
-            <div class="brand-subtitle">Weekly Alignment</div>
-            
-            <div class="sidebar-clock-container">
-                <div class="sidebar-time" id="sidebar-time">--:--:--</div>
-                <div class="sidebar-date" id="sidebar-date">-----, -- ---- ----</div>
+            <div class="sidebar-footer">
+                Careclinics Healthcare Services HQ
             </div>
         </div>
-
-        <!-- Auto-generating Slide Navigation -->
-        <div class="dept-pill-list" id="sidebar-menu"></div>
-    </div>
-
-    <div class="sidebar-footer">
-        IT Careclinics Healthcare Services Sdn Bhd
-    </div>
-</div>
 
         <!-- Right Main Viewport -->
         <div class="main-viewport">

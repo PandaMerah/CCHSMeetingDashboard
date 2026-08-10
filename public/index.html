@@ -2,14 +2,40 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Careclinics Monday Meeting</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Careclinics Weekly Alignment</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Socket.io client script automatically served by backend -->
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-    <!-- Dynamic slides will be injected here -->
-    <div id="slides-container"></div>
+    <div class="app-layout">
+        <!-- Left Forest Sidebar -->
+        <div class="sidebar">
+            <div>
+                <div class="brand-title">Careclinics</div>
+                <div class="subtitle" id="live-clock">--:--</div>
+                <div class="dept-pill-list" id="sidebar-menu"></div>
+            </div>
+            <div style="font-size: 0.85rem; color: rgba(255,255,255,0.4);">
+                Weekly Alignment Dashboard
+            </div>
+        </div>
+
+        <!-- Right Main Presentation Frame -->
+        <div class="main-viewport">
+            <div id="slides-container"></div>
+        </div>
+    </div>
+
+    <!-- TV Controls Overlay -->
+    <div class="tv-controls">
+        <button onclick="changeSlide(-1)">❮</button>
+        <span id="slide-indicator">1 / 1</span>
+        <button onclick="changeSlide(1)">❯</button>
+        <button onclick="toggleFullScreen()">⛶</button>
+        <button id="btn-autoplay" onclick="toggleAutoPlay()">▶ Auto</button>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>

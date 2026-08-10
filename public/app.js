@@ -2,147 +2,170 @@ const socket = io();
 let currentSlideIndex = 0;
 let totalSlides = 0;
 let departmentNames = [];
+let slideMeta = []; // Meta details to map slides to left sidebar menu
+let autoPlayInterval = null;
 
-// Listen for live updates from server
 socket.on('dataChanged', (data) => {
-    console.log("Live update received!");
     buildSlides(data);
 });
 
-// Initial load
 fetch('/api/data').then(r => r.json()).then(data => buildSlides(data));
 
 function buildSlides(data) {
     const container = document.getElementById('slides-container');
-    container.innerHTML = ''; // Clear existing
-    departmentNames = Object.keys(data.departments);
-    
-    // 1. Front Page
+    container.innerHTML = '';
+    departmentNames = Object.keys(data.departments || {});
+    slideMeta = [];
+
+    // 1. Overview Cover
     container.innerHTML += `
         <div class="slide">
-            <div class="glass-card">
+            <div class="vibrant-card">
                 <h1>Careclinics Weekly Alignment</h1>
-                <h2 id="live-clock"></h2>
+                <p class="update-text">Welcome team! Let's align on this week's goals and departmental updates.</p>
             </div>
         </div>`;
+    slideMeta.push({ label: 'Overview', icon: '❯' });
 
-    // 2. Department Flow (Update -> QnA loop)
+    // 2. Department Update & Q&A Loop
     for (const dept of departmentNames) {
         const deptData = data.departments[dept];
-        
+
         // Update Slide
         container.innerHTML += `
             <div class="slide">
-                <div class="glass-card">
-                    <h2 class="dept-title">${dept} Update</h2>
-                    <p class="update-text">${deptData.update}</p>
+                <div class="vibrant-card">
+                    <h2>${dept}</h2>
+                    <h1 style="font-size: 3rem;">Weekly Update</h1>
+                    <p class="update-text">${deptData.update || "No update provided."}</p>
                 </div>
             </div>`;
+        slideMeta.push({ label: `${dept} Update`, icon: '❯' });
 
         // QnA Slide
         const wheelGradient = generateWheelGradient(departmentNames);
         container.innerHTML += `
             <div class="slide qna-slide">
-                <div class="glass-card qna-layout">
-                    <div class="left-panel">
-                        <h2 style="color: var(--accent-lime)">Question</h2>
-                        <p class="update-text">${deptData.question}</p>
-                    </div>
-                    <div class="right-panel">
-                        <h2>Who answers?</h2>
-                        <div class="wheel-container">
-                            <div class="wheel" style="background: ${wheelGradient}"></div>
-                            <div class="wheel-pointer">▼</div>
+                <div class="vibrant-card">
+                    <div class="qna-layout">
+                        <div>
+                            <h2>${dept} Question</h2>
+                            <p class="update-text">${deptData.question || "No question submitted."}</p>
                         </div>
-                        <p>Press <strong>ENTER</strong> to spin</p>
-                        <div class="winner-text"></div>
+                        <div style="text-align: center;">
+                            <h2>Who answers?</h2>
+                            <div class="wheel-container">
+                                <div class="wheel" style="background: ${wheelGradient}"></div>
+                                <div class="wheel-pointer">▼</div>
+                            </div>
+                            <p>Press <strong>ENTER</strong> to spin</p>
+                            <div class="winner-text"></div>
+                        </div>
                     </div>
                 </div>
             </div>`;
+        slideMeta.push({ label: `${dept} Q&A`, icon: '🎲' });
     }
 
     // 3. Vision & Mission
     container.innerHTML += `
         <div class="slide">
-            <div class="glass-card">
+            <div class="vibrant-card">
                 <h1>Vision & Mission</h1>
-                <h2>Vision</h2><p class="update-text">Humanising Care through innovative solutions.</p>
-                <br>
-                <h2>Mission</h2><p class="update-text">Delivering quality healthcare where the human touch is essence.</p>
+                <div class="pill-grid">
+                    <div class="sub-card">
+                        <h2>Vision</h2>
+                        <p style="font-size: 1.4rem;">${data.config.visionText || ""}</p>
+                    </div>
+                    <div class="sub-card">
+                        <h2>Mission</h2>
+                        <p style="font-size: 1.4rem;">${data.config.missionText || ""}</p>
+                    </div>
+                </div>
             </div>
         </div>`;
+    slideMeta.push({ label: 'Vision & Mission', icon: '❯' });
 
-    // 4. Phrases
+    // 4. Daily Phrases
+    const phrasesHtml = (data.config.phrases || [])
+        .map(p => `<p style="font-size: 1.5rem; margin-bottom: 10px;">• ${p}</p>`)
+        .join('');
+
     container.innerHTML += `
         <div class="slide">
-            <div class="glass-card">
+            <div class="vibrant-card">
                 <h1>Daily Phrases</h1>
-                <p class="update-text">• Superior medical expertise, top-notch hospitality.</p>
-                <p class="update-text">• Care with a human touch.</p>
+                <div class="sub-card" style="margin-top: 20px;">
+                    ${phrasesHtml}
+                </div>
             </div>
         </div>`;
+    slideMeta.push({ label: 'Daily Phrases', icon: '❯' });
 
-    // 5. Last Minute Speech (Conditional Admin Toggle)
+    // 5. Closing Remarks (Optional)
     if (data.config.showLastMinuteSpeech) {
         container.innerHTML += `
             <div class="slide">
-                <div class="glass-card">
-                    <h2 style="color: var(--accent-yellow)">Closing Remarks</h2>
+                <div class="vibrant-card">
+                    <h2>Closing Remarks</h2>
                     <p class="update-text">${data.config.lastMinuteSpeechText}</p>
                 </div>
             </div>`;
+        slideMeta.push({ label: 'Closing Remarks', icon: '❯' });
     }
 
-    totalSlides = document.querySelectorAll('.slide').length;
-    updateSlidePosition(); // Ensure we stay on the current slide visually after a live rebuild
+    totalSlides = slideMeta.length;
+    if (currentSlideIndex >= totalSlides) currentSlideIndex = 0;
+
+    renderSidebarMenu();
+    updateSlidePosition();
 }
 
-// Visual Wheel Generation
+function renderSidebarMenu() {
+    const menuContainer = document.getElementById('sidebar-menu');
+    menuContainer.innerHTML = slideMeta.map((item, idx) => `
+        <div class="dept-pill ${idx === currentSlideIndex ? 'active' : ''}" onclick="goToSlide(${idx})">
+            <span>${item.label}</span>
+            <span class="dept-pill-arrow">${item.icon}</span>
+        </div>
+    `).join('');
+}
+
 function generateWheelGradient(depts) {
-    const colors = ['#93c01f', '#2a5a9c', '#dbe718', '#102141', '#4caf50', '#00bcd4'];
+    if (!depts.length) return '#0a221b';
+    const colors = ['#44d685', '#2a5a9c', '#f7e859', '#0a221b', '#4caf50', '#00bcd4'];
     const sliceAngle = 360 / depts.length;
-    let grads = [];
-    for (let i = 0; i < depts.length; i++) {
-        grads.push(`${colors[i % colors.length]} ${i * sliceAngle}deg ${(i + 1) * sliceAngle}deg`);
-    }
+    let grads = depts.map((_, i) => `${colors[i % colors.length]} ${i * sliceAngle}deg ${(i + 1) * sliceAngle}deg`);
     return `conic-gradient(${grads.join(', ')})`;
 }
 
-// D-Pad Navigation
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight' || e.keyCode === 39) {
-        if (currentSlideIndex < totalSlides - 1) currentSlideIndex++;
-        updateSlidePosition();
-    } else if (e.key === 'ArrowLeft' || e.keyCode === 37) {
-        if (currentSlideIndex > 0) currentSlideIndex--;
-        updateSlidePosition();
-    } else if (e.key === 'Enter' || e.keyCode === 13) {
-        // Trigger wheel if on a QnA slide
-        const currentSlideEl = document.querySelectorAll('.slide')[currentSlideIndex];
-        if (currentSlideEl.classList.contains('qna-slide')) {
-            spinWheel(currentSlideEl);
-        }
-    }
-});
+function goToSlide(index) {
+    currentSlideIndex = index;
+    updateSlidePosition();
+}
+
+function changeSlide(direction) {
+    currentSlideIndex = Math.max(0, Math.min(totalSlides - 1, currentSlideIndex + direction));
+    updateSlidePosition();
+}
 
 function updateSlidePosition() {
     const container = document.getElementById('slides-container');
-    container.style.transform = `translateX(-${currentSlideIndex * 100}vw)`;
+    container.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+    document.getElementById('slide-indicator').innerText = `${currentSlideIndex + 1} / ${totalSlides}`;
+    renderSidebarMenu();
 }
 
-// Independent Spin Logic per slide
 function spinWheel(slideElement) {
     const wheel = slideElement.querySelector('.wheel');
     const winnerDisplay = slideElement.querySelector('.winner-text');
-    
-    // Read current rotation from dataset or start at 0
     let currentRotation = parseFloat(wheel.dataset.rotation || 0);
-    winnerDisplay.innerText = "Spinning...";
 
-    const spins = 5; 
+    winnerDisplay.innerText = "Spinning...";
+    const spins = 5;
     const randomDegree = Math.floor(Math.random() * 360);
     currentRotation += (spins * 360) + randomDegree;
-    
+
     wheel.dataset.rotation = currentRotation;
     wheel.style.transform = `rotate(${currentRotation}deg)`;
 
@@ -150,12 +173,48 @@ function spinWheel(slideElement) {
         const normalizedDegree = (360 - (currentRotation % 360)) % 360;
         const sliceAngle = 360 / departmentNames.length;
         const winningIndex = Math.floor(normalizedDegree / sliceAngle);
-        winnerDisplay.innerText = `Answering: ${departmentNames[winningIndex]}!`;
+        winnerDisplay.innerText = `Answering: ${departmentNames[winningIndex] || "Staff"}!`;
     }, 4000);
 }
 
-// Live Clock
+function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+function toggleAutoPlay() {
+    const btn = document.getElementById('btn-autoplay');
+    if (autoPlayInterval) {
+        clearInterval(autoPlayInterval);
+        autoPlayInterval = null;
+        btn.innerText = "▶ Auto";
+        btn.style.background = "";
+    } else {
+        autoPlayInterval = setInterval(() => {
+            currentSlideIndex = (currentSlideIndex + 1) % totalSlides;
+            updateSlidePosition();
+        }, 8000);
+        btn.innerText = "⏸ Auto";
+        btn.style.background = "#44d685";
+        btn.style.color = "#0a221b";
+    }
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') changeSlide(1);
+    if (e.key === 'ArrowLeft') changeSlide(-1);
+    if (e.key === 'Enter') {
+        const currentSlideEl = document.querySelectorAll('.slide')[currentSlideIndex];
+        if (currentSlideEl && currentSlideEl.querySelector('.wheel')) {
+            spinWheel(currentSlideEl);
+        }
+    }
+});
+
 setInterval(() => {
     const clock = document.getElementById('live-clock');
-    if(clock) clock.innerText = new Date().toLocaleString('en-MY', { weekday: 'long', hour: '2-digit', minute: '2-digit' });
+    if (clock) clock.innerText = new Date().toLocaleString('en-MY', { weekday: 'short', hour: '2-digit', minute: '2-digit' });
 }, 1000);

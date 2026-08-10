@@ -2,7 +2,7 @@ const socket = io();
 let currentSlideIndex = 0;
 let totalSlides = 0;
 let departmentNames = [];
-let slideMeta = []; // Meta details to map slides to left sidebar menu
+let slideMeta = [];
 let autoPlayInterval = null;
 
 socket.on('dataChanged', (data) => {
@@ -17,96 +17,125 @@ function buildSlides(data) {
     departmentNames = Object.keys(data.departments || {});
     slideMeta = [];
 
-    // 1. Overview Cover
+    // 1. Overview Main Page
     container.innerHTML += `
         <div class="slide">
-            <div class="vibrant-card">
-                <h1>Careclinics Weekly Alignment</h1>
-                <p class="update-text">Welcome team! Let's align on this week's goals and departmental updates.</p>
+            <div class="cc-card overview-card">
+                <div class="overview-header">
+                    <img src="/careclinic-logo.webp" alt="Care Clinics Logo" class="overview-logo">
+                    <div class="overview-clock-box">
+                        <div class="overview-time" id="main-clock-time">--:--:--</div>
+                        <div class="overview-date" id="main-clock-date">-----, -- ---- ----</div>
+                    </div>
+                </div>
+                
+                <h1 style="margin-top: 24px;">Weekly Alignment Meeting</h1>
+                <p class="update-text" style="max-width: 900px;">
+                    Humanising Care — While we embrace technology in the delivery and improvement of quality care, the human touch remains the essence of our service.
+                </p>
+
+                <div class="overview-status-bar">
+                    <div class="status-chip">
+                        <span>Active Departments:</span> <strong>${departmentNames.length}</strong>
+                    </div>
+                    <div class="status-chip">
+                        <span>Status:</span> <strong style="color: #00b894;">Live Broadcast Active</strong>
+                    </div>
+                </div>
             </div>
         </div>`;
     slideMeta.push({ label: 'Overview', icon: '❯' });
 
-    // 2. Department Update & Q&A Loop
+    // 2. Department Updates & Conditional Q&A Loop
     for (const dept of departmentNames) {
         const deptData = data.departments[dept];
 
         // Update Slide
         container.innerHTML += `
             <div class="slide">
-                <div class="vibrant-card">
-                    <h2>${dept}</h2>
-                    <h1 style="font-size: 3rem;">Weekly Update</h1>
+                <div class="cc-card">
+                    <div class="cc-card-tag">${dept}</div>
+                    <h2>Weekly Department Update</h2>
                     <p class="update-text">${deptData.update || "No update provided."}</p>
                 </div>
             </div>`;
         slideMeta.push({ label: `${dept} Update`, icon: '❯' });
 
-        // QnA Slide
-        const wheelGradient = generateWheelGradient(departmentNames);
-        container.innerHTML += `
-            <div class="slide qna-slide">
-                <div class="vibrant-card">
-                    <div class="qna-layout">
-                        <div>
-                            <h2>${dept} Question</h2>
-                            <p class="update-text">${deptData.question || "No question submitted."}</p>
-                        </div>
-                        <div style="text-align: center;">
-                            <h2>Who answers?</h2>
-                            <div class="wheel-container">
-                                <div class="wheel" style="background: ${wheelGradient}"></div>
-                                <div class="wheel-pointer">▼</div>
+        // Conditional Q&A Slide
+        if (data.config.showQnA !== false) {
+            const wheelGradient = generateWheelGradient(departmentNames);
+            container.innerHTML += `
+                <div class="slide qna-slide">
+                    <div class="cc-card">
+                        <div class="qna-layout">
+                            <div>
+                                <div class="cc-card-tag" style="background: rgba(245, 158, 11, 0.15); color: #d97706;">Question</div>
+                                <h2>${dept}</h2>
+                                <p class="update-text">${deptData.question || "No question submitted."}</p>
                             </div>
-                            <p>Press <strong>ENTER</strong> to spin</p>
-                            <div class="winner-text"></div>
+                            <div style="text-align: center;">
+                                <h2>Who answers?</h2>
+                                <div class="wheel-container">
+                                    <div class="wheel" style="background: ${wheelGradient}"></div>
+                                    <div class="wheel-pointer">▼</div>
+                                </div>
+                                <p style="font-size: 1.2rem; color: var(--cc-text-muted);">Press <strong>ENTER</strong> to spin wheel</p>
+                                <div class="winner-text"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            slideMeta.push({ label: `${dept} Q&A`, icon: '🎲' });
+        }
+    }
+
+    // 3. Vision & Mission Slide
+    if (data.config.showVisionMission !== false) {
+        container.innerHTML += `
+            <div class="slide">
+                <div class="cc-card">
+                    <div class="cc-card-tag">Core Values</div>
+                    <h1>Vision & Mission</h1>
+                    <div class="pill-grid">
+                        <div class="sub-card">
+                            <h2>Vision</h2>
+                            <p>${data.config.visionText || "Humanising Care through innovative solutions."}</p>
+                        </div>
+                        <div class="sub-card">
+                            <h2>Mission</h2>
+                            <p>${data.config.missionText || "Delivering quality healthcare where the human touch is essence."}</p>
                         </div>
                     </div>
                 </div>
             </div>`;
-        slideMeta.push({ label: `${dept} Q&A`, icon: '🎲' });
+        slideMeta.push({ label: 'Vision & Mission', icon: '❯' });
     }
 
-    // 3. Vision & Mission
-    container.innerHTML += `
-        <div class="slide">
-            <div class="vibrant-card">
-                <h1>Vision & Mission</h1>
-                <div class="pill-grid">
-                    <div class="sub-card">
-                        <h2>Vision</h2>
-                        <p style="font-size: 1.4rem;">${data.config.visionText || ""}</p>
-                    </div>
-                    <div class="sub-card">
-                        <h2>Mission</h2>
-                        <p style="font-size: 1.4rem;">${data.config.missionText || ""}</p>
-                    </div>
-                </div>
-            </div>
-        </div>`;
-    slideMeta.push({ label: 'Vision & Mission', icon: '❯' });
+    // 4. Daily Phrases Slide
+    if (data.config.showDailyPhrases !== false) {
+        const phrasesHtml = (data.config.phrases || [])
+            .map(p => `<p style="font-size: 1.8rem; margin-bottom: 12px; color: var(--cc-text-dark);">• ${p}</p>`)
+            .join('');
 
-    // 4. Daily Phrases
-    const phrasesHtml = (data.config.phrases || [])
-        .map(p => `<p style="font-size: 1.5rem; margin-bottom: 10px;">• ${p}</p>`)
-        .join('');
-
-    container.innerHTML += `
-        <div class="slide">
-            <div class="vibrant-card">
-                <h1>Daily Phrases</h1>
-                <div class="sub-card" style="margin-top: 20px;">
-                    ${phrasesHtml}
-                </div>
-            </div>
-        </div>`;
-    slideMeta.push({ label: 'Daily Phrases', icon: '❯' });
-
-    // 5. Closing Remarks (Optional)
-    if (data.config.showLastMinuteSpeech) {
         container.innerHTML += `
             <div class="slide">
-                <div class="vibrant-card">
+                <div class="cc-card">
+                    <div class="cc-card-tag">Culture</div>
+                    <h1>Daily Phrases</h1>
+                    <div class="sub-card" style="margin-top: 10px;">
+                        ${phrasesHtml}
+                    </div>
+                </div>
+            </div>`;
+        slideMeta.push({ label: 'Daily Phrases', icon: '❯' });
+    }
+
+    // 5. Closing Remarks
+    if (data.config.showLastMinuteSpeech === true) {
+        container.innerHTML += `
+            <div class="slide">
+                <div class="cc-card">
+                    <div class="cc-card-tag" style="background: rgba(17, 35, 73, 0.1); color: var(--cc-navy);">Closing</div>
                     <h2>Closing Remarks</h2>
                     <p class="update-text">${data.config.lastMinuteSpeechText}</p>
                 </div>
@@ -119,6 +148,7 @@ function buildSlides(data) {
 
     renderSidebarMenu();
     updateSlidePosition();
+    updateClocks();
 }
 
 function renderSidebarMenu() {
@@ -126,14 +156,14 @@ function renderSidebarMenu() {
     menuContainer.innerHTML = slideMeta.map((item, idx) => `
         <div class="dept-pill ${idx === currentSlideIndex ? 'active' : ''}" onclick="goToSlide(${idx})">
             <span>${item.label}</span>
-            <span class="dept-pill-arrow">${item.icon}</span>
+            <span style="font-size: 0.9rem; opacity: 0.8;">${item.icon}</span>
         </div>
     `).join('');
 }
 
 function generateWheelGradient(depts) {
-    if (!depts.length) return '#0a221b';
-    const colors = ['#44d685', '#2a5a9c', '#f7e859', '#0a221b', '#4caf50', '#00bcd4'];
+    if (!depts.length) return '#112349';
+    const colors = ['#1863dc', '#00b894', '#f59e0b', '#112349', '#0984e3', '#6c5ce7'];
     const sliceAngle = 360 / depts.length;
     let grads = depts.map((_, i) => `${colors[i % colors.length]} ${i * sliceAngle}deg ${(i + 1) * sliceAngle}deg`);
     return `conic-gradient(${grads.join(', ')})`;
@@ -154,6 +184,12 @@ function updateSlidePosition() {
     container.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
     document.getElementById('slide-indicator').innerText = `${currentSlideIndex + 1} / ${totalSlides}`;
     renderSidebarMenu();
+
+    // Smoothly Auto-Scroll active pill into viewport
+    const activePill = document.querySelector('.dept-pill.active');
+    if (activePill) {
+        activePill.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
 }
 
 function spinWheel(slideElement) {
@@ -198,9 +234,24 @@ function toggleAutoPlay() {
             updateSlidePosition();
         }, 8000);
         btn.innerText = "⏸ Auto";
-        btn.style.background = "#44d685";
-        btn.style.color = "#0a221b";
+        btn.style.background = "#1863dc";
     }
+}
+
+function updateClocks() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-MY', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+    const dateStr = now.toLocaleDateString('en-MY', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+    const sbTime = document.getElementById('sidebar-time');
+    const sbDate = document.getElementById('sidebar-date');
+    if (sbTime) sbTime.innerText = timeStr;
+    if (sbDate) sbDate.innerText = dateStr;
+
+    const mainTime = document.getElementById('main-clock-time');
+    const mainDate = document.getElementById('main-clock-date');
+    if (mainTime) mainTime.innerText = timeStr;
+    if (mainDate) mainDate.innerText = dateStr;
 }
 
 document.addEventListener('keydown', (e) => {
@@ -214,7 +265,4 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-setInterval(() => {
-    const clock = document.getElementById('live-clock');
-    if (clock) clock.innerText = new Date().toLocaleString('en-MY', { weekday: 'short', hour: '2-digit', minute: '2-digit' });
-}, 1000);
+setInterval(updateClocks, 1000);

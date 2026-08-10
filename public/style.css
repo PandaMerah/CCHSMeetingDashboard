@@ -1,12 +1,11 @@
 :root {
-    --bg-cream: #f4f2ea;
-    --sidebar-dark: #0a221b;
-    --sidebar-pill-bg: rgba(255, 255, 255, 0.08);
-    --vibrant-green: #38c371;
-    --vibrant-mint: #44d685;
-    --card-inner-bg: rgba(255, 255, 255, 0.15);
-    --text-white: #ffffff;
-    --text-dark: #0a221b;
+    --cc-navy: #112349;
+    --cc-blue: #1863dc;
+    --cc-light-bg: #f0f4f8;
+    --cc-card-bg: #ffffff;
+    --cc-text-dark: #1f2937;
+    --cc-text-muted: #6b7280;
+    --cc-border: #e5e7eb;
 }
 
 * {
@@ -16,91 +15,145 @@
 }
 
 body, html {
-    width: 100vw;
-    height: 100vh;
+    width: 1920px;
+    height: 1080px;
+    max-width: 100vw;
+    max-height: 100vh;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: var(--bg-cream);
+    background-color: var(--cc-light-bg);
+    color: var(--cc-text-dark);
     overflow: hidden;
 }
 
-/* Master Layout Grid */
 .app-layout {
     display: flex;
     width: 100vw;
     height: 100vh;
 }
 
-/* Left Sidebar Navigation */
+/* Left Sidebar with Smooth Scrolling */
 .sidebar {
-    width: 340px;
-    background-color: var(--sidebar-dark);
-    color: var(--text-white);
-    padding: 40px 24px;
+    width: 420px;
+    background-color: var(--cc-navy);
+    color: #ffffff;
+    padding: 40px 32px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
     z-index: 10;
+    height: 100vh;
+    overflow: hidden;
 }
 
-.brand-title {
-    font-size: 2.2rem;
+.sidebar-logo {
+    max-width: 260px;
+    height: auto;
+    background: #ffffff;
+    padding: 12px 18px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.brand-subtitle {
+    font-size: 1.1rem;
+    color: #8ed1fc;
+    font-weight: 700;
+    margin-top: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sidebar-clock-container {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-top: 16px;
+}
+
+.sidebar-time {
+    font-size: 1.8rem;
     font-weight: 800;
-    color: var(--vibrant-mint);
-    margin-bottom: 10px;
-    letter-spacing: -0.5px;
+    color: #ffffff;
+    letter-spacing: 0.5px;
 }
 
-.subtitle {
-    color: rgba(255, 255, 255, 0.6);
+.sidebar-date {
     font-size: 0.95rem;
-    margin-bottom: 30px;
+    color: rgba(255, 255, 255, 0.75);
+    margin-top: 2px;
 }
 
-/* Department Pill Menu */
+/* Scrollable Menu Pill Container */
 .dept-pill-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    flex-grow: 1;
+    gap: 10px;
+    margin-top: 20px;
+    max-height: calc(100vh - 380px);
     overflow-y: auto;
+    scroll-behavior: smooth;
+    padding-right: 6px;
+}
+
+/* Custom Navy Theme Scrollbar */
+.dept-pill-list::-webkit-scrollbar {
+    width: 6px;
+}
+.dept-pill-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+.dept-pill-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+.dept-pill-list::-webkit-scrollbar-thumb:hover {
+    background: var(--cc-blue);
 }
 
 .dept-pill {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
-    background: var(--sidebar-pill-bg);
-    border-radius: 30px;
-    color: var(--text-white);
-    font-size: 1.05rem;
+    padding: 14px 20px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 1.1rem;
     font-weight: 600;
-    transition: all 0.3s ease;
     cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
 }
 
 .dept-pill.active {
-    background: var(--vibrant-mint);
-    color: var(--text-dark);
+    background: var(--cc-blue);
+    border-color: var(--cc-blue);
+    color: #ffffff;
     font-weight: 700;
-    box-shadow: 0 4px 15px rgba(68, 214, 133, 0.3);
+    box-shadow: 0 4px 14px rgba(24, 99, 220, 0.4);
 }
 
-.dept-pill-arrow {
-    font-size: 1.1rem;
+.sidebar-footer {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.5);
+    padding-top: 10px;
 }
 
-/* Main Canvas Frame */
+/* Main Viewport Slide System */
 .main-viewport {
     flex: 1;
-    padding: 30px;
+    padding: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
+    overflow: hidden;
 }
 
-/* Dynamic Slide Carousel Container */
 #slides-container {
     width: 100%;
     height: 100%;
@@ -116,138 +169,217 @@ body, html {
     justify-content: center;
 }
 
-/* Vibrant Green Main Content Card */
-.vibrant-card {
+.cc-card {
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #38c371 0%, #2bb063 100%);
-    border-radius: 28px;
+    background: var(--cc-card-bg);
+    border-radius: 24px;
+    border: 1px solid var(--cc-border);
     padding: 60px;
-    color: var(--text-white);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    box-shadow: 0 15px 35px rgba(10, 34, 27, 0.12);
+    box-shadow: 0 20px 40px rgba(17, 35, 73, 0.06);
     position: relative;
-    overflow: hidden;
 }
 
-.vibrant-card h1 {
-    font-family: Georgia, serif;
-    font-size: 3.8rem;
-    line-height: 1.15;
-    margin-bottom: 24px;
-    font-weight: normal;
-}
-
-.vibrant-card h2 {
-    font-size: 2.2rem;
-    color: #f7e859;
-    margin-bottom: 16px;
-}
-
-.vibrant-card .update-text {
-    font-size: 2.2rem;
+.cc-card .update-text {
+    font-size: 2.3rem;
     line-height: 1.5;
-    font-weight: 500;
+    color: var(--cc-text-dark);
+    white-space: pre-line; /* Preserves newlines entered from textareas */
 }
 
-/* Sub-card Container Grid */
-.pill-grid {
+.overview-card {
+    justify-content: space-between;
+}
+
+.overview-header {
     display: flex;
-    gap: 16px;
-    margin-top: 30px;
-}
-
-.sub-card {
-    background: var(--card-inner-bg);
-    border-radius: 18px;
-    padding: 24px;
-    flex: 1;
-    backdrop-filter: blur(10px);
-}
-
-/* Q&A Split Layout */
-.qna-layout {
-    display: flex;
-    gap: 40px;
-    width: 100%;
-    height: 100%;
+    justify-content: space-between;
     align-items: center;
 }
 
-.qna-layout > div {
-    flex: 1;
+.overview-logo {
+    max-width: 320px;
+    height: auto;
 }
 
-/* Interactive Wheel */
+.overview-clock-box {
+    background: var(--cc-navy);
+    color: #ffffff;
+    padding: 20px 32px;
+    border-radius: 18px;
+    text-align: right;
+    box-shadow: 0 10px 25px rgba(17, 35, 73, 0.15);
+}
+
+.overview-time {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+}
+
+.overview-date {
+    font-size: 1.25rem;
+    color: var(--cc-blue);
+    font-weight: 600;
+    margin-top: 6px;
+}
+
+.overview-status-bar {
+    display: flex;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.status-chip {
+    background: var(--cc-light-bg);
+    border: 1px solid var(--cc-border);
+    padding: 16px 28px;
+    border-radius: 12px;
+    font-size: 1.3rem;
+    color: var(--cc-text-dark);
+}
+
+.cc-card-tag {
+    display: inline-block;
+    align-self: flex-start;
+    background: rgba(24, 99, 220, 0.1);
+    color: var(--cc-blue);
+    font-size: 1.25rem;
+    font-weight: 700;
+    padding: 8px 20px;
+    border-radius: 30px;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+}
+
+.cc-card h1 {
+    font-size: 3.8rem;
+    color: var(--cc-navy);
+    line-height: 1.2;
+    margin-bottom: 20px;
+    font-weight: 800;
+}
+
+.cc-card h2 {
+    font-size: 2.2rem;
+    color: var(--cc-blue);
+    margin-bottom: 16px;
+    font-weight: 700;
+}
+
+.cc-card .update-text {
+    font-size: 2.3rem;
+    line-height: 1.5;
+    color: var(--cc-text-dark);
+}
+
+.pill-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-top: 20px;
+}
+
+.sub-card {
+    background: var(--cc-light-bg);
+    border-radius: 16px;
+    padding: 32px;
+    border: 1px solid var(--cc-border);
+    white-space: pre-line; /* Preserves line breaks */
+}
+
+.sub-card h2 {
+    color: var(--cc-navy);
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.sub-card p {
+    font-size: 1.6rem;
+    color: var(--cc-text-dark);
+    line-height: 1.5;
+}
+
+.qna-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    width: 100%;
+    align-items: center;
+}
+
 .wheel-container {
     position: relative;
     margin: 20px auto;
-    width: 280px;
-    height: 280px;
+    width: 320px;
+    height: 320px;
 }
 
 .wheel {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    border: 6px solid var(--text-white);
-    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    border: 8px solid var(--cc-navy);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
 }
 
 .wheel-pointer {
     position: absolute;
-    top: -25px;
+    top: -28px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 3rem;
-    color: #f7e859;
+    font-size: 3.5rem;
+    color: var(--cc-blue);
     z-index: 10;
 }
 
 .winner-text {
     font-size: 2.2rem;
-    color: #f7e859;
-    font-weight: bold;
-    min-height: 45px;
-    margin-top: 15px;
+    color: var(--cc-navy);
+    font-weight: 800;
+    min-height: 50px;
+    margin-top: 20px;
     text-align: center;
 }
 
-/* On-screen Controls Overlay */
 .tv-controls {
     position: fixed;
-    bottom: 45px;
-    right: 45px;
+    bottom: 32px;
+    right: 32px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    background: var(--sidebar-dark);
-    padding: 8px 16px;
-    border-radius: 30px;
+    gap: 12px;
+    background: var(--cc-navy);
+    padding: 10px 20px;
+    border-radius: 40px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     z-index: 1000;
 }
 
 .tv-controls button {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     border: none;
-    color: var(--text-white);
-    padding: 8px 14px;
+    color: #ffffff;
+    padding: 10px 18px;
     border-radius: 20px;
     cursor: pointer;
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 1rem;
 }
 
 .tv-controls button:hover {
-    background: var(--vibrant-mint);
-    color: var(--sidebar-dark);
+    background: var(--cc-blue);
 }
 
 #slide-indicator {
-    color: var(--vibrant-mint);
-    font-weight: bold;
-    min-width: 50px;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    min-width: 60px;
     text-align: center;
 }

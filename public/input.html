@@ -2,61 +2,202 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Update Department Data</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Care Clinics - Submit Weekly Update</title>
     <style>
-        body { font-family: sans-serif; background: #f4f4f4; padding: 50px; }
-        .container { max-width: 600px; background: white; padding: 30px; border-radius: 10px; margin: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        input, select, textarea { width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box; }
-        button { background: #102141; color: white; border: none; padding: 15px; cursor: pointer; width: 100%; border-radius: 5px; margin-top: 10px;}
-        button:hover { background: #93c01f; }
-        .history-section { background: #eef2f5; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        :root {
+            --cc-navy: #112349;
+            --cc-blue: #1863dc;
+            --cc-light-bg: #f0f4f8;
+            --cc-border: #d1d5db;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--cc-light-bg);
+            color: #111827;
+            padding: 40px 20px;
+            margin: 0;
+        }
+
+        .container-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .card-panel {
+            background: #ffffff;
+            padding: 36px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(17, 35, 73, 0.08);
+            border: 1px solid var(--cc-border);
+        }
+
+        .header {
+            border-bottom: 2px solid var(--cc-light-bg);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+
+        h2 { color: var(--cc-navy); margin: 0; }
+
+        .history-box {
+            background: var(--cc-light-bg);
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #e5e7eb;
+        }
+
+        label {
+            display: block;
+            margin-top: 14px;
+            font-weight: 600;
+            color: var(--cc-navy);
+        }
+
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            margin-top: 6px;
+            border-radius: 8px;
+            border: 1px solid var(--cc-border);
+            font-size: 1rem;
+            background: #ffffff;
+        }
+
+        button {
+            background: var(--cc-blue);
+            color: white;
+            font-weight: bold;
+            border: none;
+            padding: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            width: 100%;
+            margin-top: 24px;
+            transition: background 0.2s;
+        }
+
+        button:hover { background: #114fb3; }
+
+        /* Preview Card Mirror */
+        .preview-tv-card {
+            background: #ffffff;
+            border: 2px solid var(--cc-blue);
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: 0 15px 30px rgba(17, 35, 73, 0.1);
+        }
+
+        .cc-card-tag {
+            display: inline-block;
+            background: rgba(24, 99, 220, 0.1);
+            color: var(--cc-blue);
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+        }
+
+        #status {
+            font-weight: bold;
+            font-size: 1rem;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Submit Weekly Update</h2>
-        
-        <label>Select Department:</label>
-        <select id="department" onchange="loadHistoryDropdown()">
-            <option value="IT Support">IT Support</option>
-            <option value="Human Resources">Human Resources</option>
-            <option value="Operations">Operations</option>
-        </select>
+    <div class="container-layout">
+        <!-- Input Form Panel -->
+        <div class="card-panel">
+            <div class="header">
+                <h2>Submit Department Update</h2>
+                <span style="color: #6b7280;">Care Clinics Weekly Alignment</span>
+            </div>
 
-        <div class="history-section">
-            <label>Load Previous Update (Optional):</label>
-            <select id="historyDropdown" onchange="populateFromHistory()">
-                <option value="">-- Select a past update --</option>
-            </select>
+            <div id="status"></div>
+
+            <label>Select Department:</label>
+            <select id="department" onchange="loadHistoryDropdown(); populateCurrentDeptData(); updatePreview();"></select>
+
+            <div class="history-box">
+                <label style="margin-top: 0;">Load Previous Update (Optional):</label>
+                <select id="historyDropdown" onchange="populateFromHistory()"></select>
+            </div>
+
+            <label>Weekly Update Text:</label>
+            <textarea id="updateText" rows="5" placeholder="Enter your department's weekly update..." oninput="updatePreview()"></textarea>
+
+            <label>Department Specific Question (For Q&A):</label>
+            <input type="text" id="questionText" placeholder="Enter question for other departments..." oninput="updatePreview()">
+
+            <button onclick="submitUpdate()">Save & Broadcast Live to TV</button>
         </div>
 
-        <label>Update Text:</label>
-        <textarea id="updateText" rows="4"></textarea>
+        <!-- Live Preview Panel Section in public/input.html -->
+        <div class="card-panel" style="background: var(--cc-light-bg);">
+            <div class="header">
+                <h2>Live TV Slide Preview</h2>
+                <span style="color: #6b7280;">Real-time view of broadcast slide</span>
+            </div>
 
-        <label>Department Specific Question:</label>
-        <input type="text" id="questionText">
+            <div class="preview-tv-card">
+                <div class="cc-card-tag" id="prevTag">IT</div>
+                <h3 style="color: var(--cc-blue); margin-top: 0;">Weekly Department Update</h3>
+                <p id="prevUpdate" style="font-size: 1.25rem; color: #111827; line-height: 1.5; min-height: 100px; white-space: pre-line;">Your update text will appear here...</p>
 
-        <button onclick="submitUpdate()">Save & Broadcast Live to TV</button>
-        <p id="status"></p>
+                <hr style="border: none; border-top: 1px solid var(--cc-border); margin: 20px 0;">
+
+                <div class="cc-card-tag" style="background: rgba(245, 158, 11, 0.15); color: #d97706;">Q&A QUESTION</div>
+                <p id="prevQuestion" style="font-size: 1.1rem; color: #111827; margin: 0; white-space: pre-line;">Your question will appear here...</p>
+            </div>
+        </div>
     </div>
 
     <script>
         let fullHistory = [];
+        let departmentData = {};
 
-        // Fetch data on load
-        fetch('/api/data').then(r => r.json()).then(data => {
-            fullHistory = data.history;
+        async function loadData() {
+            const res = await fetch('/api/data');
+            const data = await res.json();
+
+            fullHistory = data.history || [];
+            departmentData = data.departments || {};
+
+            const deptSelect = document.getElementById('department');
+            deptSelect.innerHTML = Object.keys(departmentData).map(d => `<option value="${d}">${d}</option>`).join('');
+
             loadHistoryDropdown();
-        });
+            populateCurrentDeptData();
+            updatePreview();
+        }
+
+        function populateCurrentDeptData() {
+            const selectedDept = document.getElementById('department').value;
+            if (departmentData[selectedDept]) {
+                document.getElementById('updateText').value = departmentData[selectedDept].update || "";
+                document.getElementById('questionText').value = departmentData[selectedDept].question || "";
+            }
+        }
 
         function loadHistoryDropdown() {
             const dept = document.getElementById('department').value;
             const dropdown = document.getElementById('historyDropdown');
             dropdown.innerHTML = '<option value="">-- Select a past update --</option>';
-            
-            // Filter history by selected department
+
             const deptHistory = fullHistory.filter(h => h.department === dept);
-            
             deptHistory.forEach((item, index) => {
                 dropdown.innerHTML += `<option value="${index}">${item.dateString}</option>`;
             });
@@ -66,31 +207,56 @@
             const dropdown = document.getElementById('historyDropdown');
             const dept = document.getElementById('department').value;
             const deptHistory = fullHistory.filter(h => h.department === dept);
-            
+
             if (dropdown.value !== "") {
                 const selectedData = deptHistory[dropdown.value];
                 document.getElementById('updateText').value = selectedData.update;
                 document.getElementById('questionText').value = selectedData.question;
+                updatePreview();
             }
         }
 
+        function updatePreview() {
+            const dept = document.getElementById('department').value || "Department";
+            document.getElementById('prevTag').innerText = dept;
+            document.getElementById('prevUpdate').innerText = document.getElementById('updateText').value || "Your update text will appear here...";
+            document.getElementById('prevQuestion').innerText = document.getElementById('questionText').value || "Your question will appear here...";
+        }
+
         async function submitUpdate() {
-            const data = {
+            const payload = {
                 department: document.getElementById('department').value,
                 updateText: document.getElementById('updateText').value,
                 questionText: document.getElementById('questionText').value
             };
 
-            const response = await fetch('/api/update', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
+            try {
+                const response = await fetch('/api/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-            const result = await response.json();
-            document.getElementById('status').innerText = result.message;
-            document.getElementById('status').style.color = "green";
+                const res = await response.json();
+                showStatus(res.message, false);
+                await loadData();
+            } catch (err) {
+                showStatus("Error submitting update.", true);
+            }
         }
+
+        function showStatus(msg, isError) {
+            const statusEl = document.getElementById('status');
+            statusEl.innerText = msg;
+            statusEl.style.display = 'block';
+            statusEl.style.background = isError ? '#fde8e8' : '#e6f4ea';
+            statusEl.style.color = isError ? '#9b1c1c' : '#0e6251';
+            statusEl.style.border = `1px solid ${isError ? '#f8b4b4' : '#a3e0b5'}`;
+
+            setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
+        }
+
+        loadData();
     </script>
 </body>
 </html>

@@ -1,17 +1,106 @@
 {
   "config": {
-    "showLastMinuteSpeech": false,
-    "lastMinuteSpeechText": "CEO SPEECH"
+    "showQnA": true,
+    "showDailyPhrases": true,
+    "showVisionMission": true,
+    "showLastMinuteSpeech": true,
+    "visionText": "Empower patients with the freedom to access quality healthcare services through digital integration anytime, anywhere.",
+    "missionText": "Deliver quality personalised care by merging of best medical practises with modern technology. ",
+    "phrases": [
+      "Humanising Care"
+    ],
+    "lastMinuteSpeechText": "Aduduuu"
   },
   "departments": {
-    "IT Support": {
-      "update": "Finalized the SystmOne configuration.",
-      "question": "Which clinical system was configured?"
+    "CEO OFFICE": {
+      "update": "Pending update...",
+      "question": "N/A"
     },
-    "Operations": {
-      "update": "Implemented new patient queuing workflow.",
-      "question": "What new workflow was implemented?"
+    "ADMIN": {
+      "update": "Pending update...",
+      "question": "N/A"
+    },
+    "BUSINESS LEGAL": {
+      "update": "Pending update...",
+      "question": "N/A"
+    },
+    "PMI TEAM": {
+      "update": "Pending update...",
+      "question": "N/A"
+    },
+    "BUSINESS DEVELOPMENT": {
+      "update": "Pending update...",
+      "question": "N/A"
+    },
+    "CORPORATE HEALTH": {
+      "update": "Pending update...",
+      "question": "N/A"
+    },
+    "FINANCE": {
+      "update": "Pending update...",
+      "question": "N/A"
+    },
+    "ACCOUNT": {
+      "update": "Pending update...",
+      "question": "N/A"
+    },
+    "PROCUREMENT": {
+      "update": "Pending update...",
+      "question": "N/A"
+    },
+    "TALENT DEVELOPMENT": {
+      "update": "Pending update...",
+      "question": "N/A"
+    },
+    "CLINICAL GOVERNANCE": {
+      "update": "Pending update...",
+      "question": "N/A"
+    },
+    "OPERATION": {
+      "update": "Pending update...",
+      "question": "N/A"
+    },
+    "HR": {
+      "update": "Pending update...",
+      "question": "N/A"
+    },
+    "IT": {
+      "update": "- This month will start to do inventory asset update for all HQ staff (laptop, monitor)\n- ⁠and the same time we will do IT audit for each laptop user..",
+      "question": "What will be going for this month activity for IT department"
+    },
+    "TPP SYSTMONE": {
+      "update": "Pending update...",
+      "question": "N/A"
     }
   },
-  "history": []
+  "history": [
+    {
+      "timestamp": 1786347064704,
+      "dateString": "10/08/2026, 3:31:04 pm",
+      "department": "IT",
+      "update": "- This month will start to do inventory asset update for all HQ staff (laptop, monitor)\n- ⁠and the same time we will do IT audit for each laptop user..",
+      "question": "What will be going for this month activity for IT department"
+    },
+    {
+      "timestamp": 1786346705193,
+      "dateString": "10/08/2026, 3:25:05 pm",
+      "department": "IT",
+      "update": "- This month will start to do inventory asset update for all HQ staff (laptop, monitor)\n- ⁠and the same time we will do IT audit for each laptop user..",
+      "question": "What will be going for this month activity for IT department"
+    },
+    {
+      "timestamp": 1786346690858,
+      "dateString": "10/08/2026, 3:24:50 pm",
+      "department": "IT",
+      "update": "- This month will start to do inventory asset update ",
+      "question": "What will be going for this month activity for IT department"
+    },
+    {
+      "timestamp": 1786346613247,
+      "dateString": "10/08/2026, 3:23:33 pm",
+      "department": "IT",
+      "update": "- This month will start to do inventory asset update for all HQ staff (laptop, monitor)\n- ⁠and the same time we will do IT audit for each laptop user..",
+      "question": "What will be going for this month activity for IT department"
+    }
+  ]
 }

@@ -46,6 +46,18 @@ function buildSlides(data) {
         </div>`;
     slideMeta.push({ label: 'Overview', icon: '❯' });
 
+    // Build repeated department list HTML for 10 spin cycles
+    let reelItemsHtml = '';
+    if (departmentNames.length > 0) {
+        const repeatedDepts = [];
+        for (let i = 0; i < 10; i++) {
+            repeatedDepts.push(...departmentNames);
+        }
+        reelItemsHtml = repeatedDepts.map(d => `<div class="forza-slot-item">${d}</div>`).join('');
+    } else {
+        reelItemsHtml = `<div class="forza-slot-item">Press ENTER</div>`;
+    }
+
     // 2. Department Updates & Conditional Q&A Loop
     for (const dept of departmentNames) {
         const deptData = data.departments[dept];
@@ -61,9 +73,8 @@ function buildSlides(data) {
             </div>`;
         slideMeta.push({ label: `${dept} Update`, icon: '❯' });
 
-        // Conditional Q&A Slide
+        // Q&A Slide (Forza Style Vertical Slot Reel)
         if (data.config.showQnA !== false) {
-            const wheelGradient = generateWheelGradient(departmentNames);
             container.innerHTML += `
                 <div class="slide qna-slide">
                     <div class="cc-card">
@@ -73,13 +84,16 @@ function buildSlides(data) {
                                 <h2>${dept}</h2>
                                 <p class="update-text">${deptData.question || "No question submitted."}</p>
                             </div>
-                            <div style="text-align: center;">
+                            <div class="forza-spin-section">
                                 <h2>Who answers?</h2>
-                                <div class="wheel-container">
-                                    <div class="wheel" style="background: ${wheelGradient}"></div>
-                                    <div class="wheel-pointer">▼</div>
+                                <div class="forza-slot-window">
+                                    <div class="forza-slot-pointer-top">▼</div>
+                                    <div class="forza-slot-reel">
+                                        ${reelItemsHtml}
+                                    </div>
+                                    <div class="forza-slot-pointer-bottom">▲</div>
                                 </div>
-                                <p style="font-size: 1.2rem; color: var(--cc-text-muted);">Press <strong>ENTER</strong> to spin wheel</p>
+                                <p style="font-size: 1.1rem; color: var(--cc-text-muted); margin-top: 12px;">Press <strong>ENTER</strong> to Spin</p>
                                 <div class="winner-text"></div>
                             </div>
                         </div>
@@ -111,36 +125,77 @@ function buildSlides(data) {
         slideMeta.push({ label: 'Vision & Mission', icon: '❯' });
     }
 
-    // 4. Daily Phrases Slide
-    if (data.config.showDailyPhrases !== false) {
-        const phrasesHtml = (data.config.phrases || [])
-            .map(p => `<p style="font-size: 1.8rem; margin-bottom: 12px; color: var(--cc-text-dark);">• ${p}</p>`)
-            .join('');
+    // 4. Tagline Slide ("Humanising Care")
+    container.innerHTML += `
+        <div class="slide">
+            <div class="cc-card" style="align-items: center; text-align: center; justify-content: center;">
+                <div class="cc-card-tag">Our Tagline</div>
+                <h1 class="tagline-display">Humanising Care</h1>
+                <p style="font-size: 1.6rem; color: var(--cc-text-muted); max-width: 800px; margin-top: 20px;">
+                    Delivering quality healthcare where the human touch is essence.
+                </p>
+            </div>
+        </div>`;
+    slideMeta.push({ label: 'Tagline', icon: '❯' });
 
+    // 5. Care Quality Phrases Slide
+    if (data.config.showDailyPhrases !== false) {
         container.innerHTML += `
             <div class="slide">
-                <div class="cc-card">
+                <div class="cc-card" style="padding: 48px;">
                     <div class="cc-card-tag">Culture</div>
-                    <h1>Daily Phrases</h1>
-                    <div class="sub-card" style="margin-top: 10px;">
-                        ${phrasesHtml}
+                    <h1 style="font-size: 2.8rem; margin-bottom: 16px;">CARE QUALITY PHRASES</h1>
+                    
+                    <div class="care-phrases-table-container">
+                        <table class="care-phrases-table">
+                            <tbody>
+                                <tr>
+                                    <td>Good morning/ afternoon/evening Mr/Ms</td>
+                                    <td>Salam Careclinics Encik/Cik/Puan</td>
+                                </tr>
+                                <tr>
+                                    <td>How may I assist you Mr/Ms</td>
+                                    <td>Ada apa saya boleh bantu Encik/Cik/Puan</td>
+                                </tr>
+                                <tr>
+                                    <td>Please wait a moment Mr/Ms</td>
+                                    <td>Sila tunggu sebentar Encik/Cik/Puan</td>
+                                </tr>
+                                <tr>
+                                    <td>Excuse me Mr/Ms</td>
+                                    <td>Maaf Encik/Cik/Puan</td>
+                                </tr>
+                                <tr>
+                                    <td>I am sorry for the inconvenience Mr/Ms</td>
+                                    <td>Maaf di atas kesulitan Encik/Cik/Puan</td>
+                                </tr>
+                                <tr>
+                                    <td>Thank you Mr/Ms</td>
+                                    <td>Terima Kasih Encik/Cik/Puan</td>
+                                </tr>
+                                <tr>
+                                    <td>Please get well soon Mr/Ms</td>
+                                    <td>Semoga cepat sembuh Encik/Cik/Puan</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>`;
-        slideMeta.push({ label: 'Daily Phrases', icon: '❯' });
+        slideMeta.push({ label: 'Care Quality Phrases', icon: '❯' });
     }
 
-    // 5. Closing Remarks
+    // 6. C-Suite Closing Remarks Slide
     if (data.config.showLastMinuteSpeech === true) {
         container.innerHTML += `
             <div class="slide">
                 <div class="cc-card">
                     <div class="cc-card-tag" style="background: rgba(17, 35, 73, 0.1); color: var(--cc-navy);">Closing</div>
-                    <h2>Closing Remarks</h2>
+                    <h2>C-Suite Closing Remarks</h2>
                     <p class="update-text">${data.config.lastMinuteSpeechText}</p>
                 </div>
             </div>`;
-        slideMeta.push({ label: 'Closing Remarks', icon: '❯' });
+        slideMeta.push({ label: 'C-Suite Closing Remarks', icon: '❯' });
     }
 
     totalSlides = slideMeta.length;
@@ -161,14 +216,6 @@ function renderSidebarMenu() {
     `).join('');
 }
 
-function generateWheelGradient(depts) {
-    if (!depts.length) return '#112349';
-    const colors = ['#1863dc', '#00b894', '#f59e0b', '#112349', '#0984e3', '#6c5ce7'];
-    const sliceAngle = 360 / depts.length;
-    let grads = depts.map((_, i) => `${colors[i % colors.length]} ${i * sliceAngle}deg ${(i + 1) * sliceAngle}deg`);
-    return `conic-gradient(${grads.join(', ')})`;
-}
-
 function goToSlide(index) {
     currentSlideIndex = index;
     updateSlidePosition();
@@ -185,32 +232,49 @@ function updateSlidePosition() {
     document.getElementById('slide-indicator').innerText = `${currentSlideIndex + 1} / ${totalSlides}`;
     renderSidebarMenu();
 
-    // Smoothly Auto-Scroll active pill into viewport
     const activePill = document.querySelector('.dept-pill.active');
     if (activePill) {
         activePill.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 }
 
-function spinWheel(slideElement) {
-    const wheel = slideElement.querySelector('.wheel');
+// Fast 0.5s Slot Machine Spin Animation
+function spinForzaReel(slideElement) {
+    const reel = slideElement.querySelector('.forza-slot-reel');
     const winnerDisplay = slideElement.querySelector('.winner-text');
-    let currentRotation = parseFloat(wheel.dataset.rotation || 0);
+    if (!reel || departmentNames.length === 0) return;
 
-    winnerDisplay.innerText = "Spinning...";
-    const spins = 5;
-    const randomDegree = Math.floor(Math.random() * 360);
-    currentRotation += (spins * 360) + randomDegree;
+    winnerDisplay.innerText = "SPINNING...";
+    winnerDisplay.style.color = "#f59e0b";
 
-    wheel.dataset.rotation = currentRotation;
-    wheel.style.transform = `rotate(${currentRotation}deg)`;
+    // Reset reel position instantly
+    reel.style.transition = "none";
+    reel.style.transform = "translateY(0)";
+
+    // Force DOM repaint
+    void reel.offsetHeight;
+
+    // Pick random winning department index
+    const winningIndex = Math.floor(Math.random() * departmentNames.length);
+    const itemHeight = 90; // Height per slot item
+    const spinLoops = 4; // Cycles through list 4 times before stopping
+
+    const targetOffset = -((spinLoops * departmentNames.length + winningIndex) * itemHeight);
+
+    // Fast 0.5s slot snap transition
+    reel.style.transition = "transform 0.5s cubic-bezier(0.1, 0.9, 0.2, 1.1)";
+    reel.style.transform = `translateY(${targetOffset}px)`;
 
     setTimeout(() => {
-        const normalizedDegree = (360 - (currentRotation % 360)) % 360;
-        const sliceAngle = 360 / departmentNames.length;
-        const winningIndex = Math.floor(normalizedDegree / sliceAngle);
-        winnerDisplay.innerText = `Answering: ${departmentNames[winningIndex] || "Staff"}!`;
-    }, 4000);
+        winnerDisplay.innerText = `WINNER: ${departmentNames[winningIndex]}!`;
+        winnerDisplay.style.color = "#1863dc";
+        
+        const slotWindow = slideElement.querySelector('.forza-slot-window');
+        if (slotWindow) {
+            slotWindow.classList.add('win-flash');
+            setTimeout(() => slotWindow.classList.remove('win-flash'), 600);
+        }
+    }, 500);
 }
 
 function toggleFullScreen() {
@@ -259,8 +323,8 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowLeft') changeSlide(-1);
     if (e.key === 'Enter') {
         const currentSlideEl = document.querySelectorAll('.slide')[currentSlideIndex];
-        if (currentSlideEl && currentSlideEl.querySelector('.wheel')) {
-            spinWheel(currentSlideEl);
+        if (currentSlideEl && currentSlideEl.querySelector('.forza-slot-reel')) {
+            spinForzaReel(currentSlideEl);
         }
     }
 });

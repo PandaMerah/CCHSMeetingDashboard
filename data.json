@@ -71,6 +71,14 @@
     "TPP SYSTMONE": {
       "update": "Pending update...",
       "question": "N/A"
+    },
+    "FRANCHISE": {
+      "update": "Pending update...",
+      "question": "N/A"
+    },
+    "FACILITY": {
+      "update": "Pending update...",
+      "question": "N/A"
     }
   },
   "history": [

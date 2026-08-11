@@ -70,6 +70,12 @@
             background: #ffffff;
         }
 
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
         button {
             background: var(--cc-blue);
             color: white;
@@ -78,13 +84,19 @@
             padding: 16px;
             cursor: pointer;
             border-radius: 8px;
-            font-size: 1.1rem;
-            width: 100%;
-            margin-top: 24px;
+            font-size: 1.05rem;
             transition: background 0.2s;
         }
 
         button:hover { background: #114fb3; }
+
+        button.btn-clear {
+            background: #e5e7eb;
+            color: #374151;
+            width: 35%;
+        }
+
+        button.btn-clear:hover { background: #d1d5db; }
 
         /* Preview Card Mirror */
         .preview-tv-card {
@@ -142,10 +154,13 @@
             <label>Department Specific Question (For Q&A):</label>
             <input type="text" id="questionText" placeholder="Enter question for other departments..." oninput="updatePreview()">
 
-            <button onclick="submitUpdate()">Save & Broadcast Live to TV</button>
+            <div class="btn-group">
+                <button type="button" class="btn-clear" onclick="clearInputFields()">Clear Text</button>
+                <button type="button" style="flex: 1;" onclick="submitUpdate()">Save & Broadcast Live to TV</button>
+            </div>
         </div>
 
-        <!-- Live Preview Panel Section in public/input.html -->
+        <!-- Live Preview Panel -->
         <div class="card-panel" style="background: var(--cc-light-bg);">
             <div class="header">
                 <h2>Live TV Slide Preview</h2>
@@ -153,13 +168,13 @@
             </div>
 
             <div class="preview-tv-card">
-                <div class="cc-card-tag" id="prevTag">IT</div>
+                <div class="cc-card-tag" id="prevTag">IT Support</div>
                 <h3 style="color: var(--cc-blue); margin-top: 0;">Weekly Department Update</h3>
                 <p id="prevUpdate" style="font-size: 1.25rem; color: #111827; line-height: 1.5; min-height: 100px; white-space: pre-line;">Your update text will appear here...</p>
 
                 <hr style="border: none; border-top: 1px solid var(--cc-border); margin: 20px 0;">
 
-                <div class="cc-card-tag" style="background: rgba(245, 158, 11, 0.15); color: #d97706;">Q&A QUESTION</div>
+                <div class="cc-card-tag" style="background: rgba(245, 158, 11, 0.15); color: #d97706;">Q&A Question</div>
                 <p id="prevQuestion" style="font-size: 1.1rem; color: #111827; margin: 0; white-space: pre-line;">Your question will appear here...</p>
             </div>
         </div>
@@ -214,6 +229,13 @@
                 document.getElementById('questionText').value = selectedData.question;
                 updatePreview();
             }
+        }
+
+        function clearInputFields() {
+            document.getElementById('updateText').value = "";
+            document.getElementById('questionText').value = "";
+            document.getElementById('historyDropdown').value = "";
+            updatePreview();
         }
 
         function updatePreview() {

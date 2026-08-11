@@ -46,19 +46,7 @@ function buildSlides(data) {
         </div>`;
     slideMeta.push({ label: 'Overview', icon: '❯' });
 
-    // Build repeated department list HTML for 10 spin cycles
-    let reelItemsHtml = '';
-    if (departmentNames.length > 0) {
-        const repeatedDepts = [];
-        for (let i = 0; i < 10; i++) {
-            repeatedDepts.push(...departmentNames);
-        }
-        reelItemsHtml = repeatedDepts.map(d => `<div class="forza-slot-item">${d}</div>`).join('');
-    } else {
-        reelItemsHtml = `<div class="forza-slot-item">Press ENTER</div>`;
-    }
-
-    // 2. Department Updates & Conditional Q&A Loop
+    // 2. Department Updates & Conditional Q&A Loop (Forza Slot Reel)
     for (const dept of departmentNames) {
         const deptData = data.departments[dept];
 
@@ -73,7 +61,7 @@ function buildSlides(data) {
             </div>`;
         slideMeta.push({ label: `${dept} Update`, icon: '❯' });
 
-        // Q&A Slide (Forza Style Vertical Slot Reel)
+        // Conditional Q&A Slide (Forza Style Vertical Reel)
         if (data.config.showQnA !== false) {
             container.innerHTML += `
                 <div class="slide qna-slide">
@@ -88,8 +76,8 @@ function buildSlides(data) {
                                 <h2>Who answers?</h2>
                                 <div class="forza-slot-window">
                                     <div class="forza-slot-pointer-top">▼</div>
-                                    <div class="forza-slot-reel">
-                                        ${reelItemsHtml}
+                                    <div class="forza-slot-reel" id="reel-${dept.replace(/\s+/g, '')}">
+                                        <div class="forza-slot-item">Press ENTER</div>
                                     </div>
                                     <div class="forza-slot-pointer-bottom">▲</div>
                                 </div>
@@ -131,9 +119,6 @@ function buildSlides(data) {
             <div class="cc-card" style="align-items: center; text-align: center; justify-content: center;">
                 <div class="cc-card-tag">Our Tagline</div>
                 <h1 class="tagline-display">Humanising Care</h1>
-                <p style="font-size: 1.6rem; color: var(--cc-text-muted); max-width: 800px; margin-top: 20px;">
-                    Delivering quality healthcare where the human touch is essence.
-                </p>
             </div>
         </div>`;
     slideMeta.push({ label: 'Tagline', icon: '❯' });
@@ -204,6 +189,13 @@ function buildSlides(data) {
     renderSidebarMenu();
     updateSlidePosition();
     updateClocks();
+    initReels();
+}
+
+function initReels() {
+    document.querySelectorAll('.forza-slot-reel').forEach(reel => {
+        reel.innerHTML = departmentNames.map(d => `<div class="forza-slot-item">${d}</div>`).join('');
+    });
 }
 
 function renderSidebarMenu() {
@@ -238,7 +230,7 @@ function updateSlidePosition() {
     }
 }
 
-// Fast 0.5s Slot Machine Spin Animation
+// Forza Horizon Style Vertical Slot Spin (0.5s duration with bounce)
 function spinForzaReel(slideElement) {
     const reel = slideElement.querySelector('.forza-slot-reel');
     const winnerDisplay = slideElement.querySelector('.winner-text');
@@ -246,34 +238,32 @@ function spinForzaReel(slideElement) {
 
     winnerDisplay.innerText = "SPINNING...";
     winnerDisplay.style.color = "#f59e0b";
-
-    // Reset reel position instantly
     reel.style.transition = "none";
     reel.style.transform = "translateY(0)";
 
-    // Force DOM repaint
+    // Force reflow
     void reel.offsetHeight;
 
-    // Pick random winning department index
+    // Pick random winner
     const winningIndex = Math.floor(Math.random() * departmentNames.length);
-    const itemHeight = 90; // Height per slot item
-    const spinLoops = 4; // Cycles through list 4 times before stopping
+    const itemHeight = 90; // Height of each slot item in px
+    
+    // Add extra full loops for excitement, landing on winningIndex
+    const totalLoops = 3;
+    const targetTranslateY = -((totalLoops * departmentNames.length + winningIndex) * itemHeight);
 
-    const targetOffset = -((spinLoops * departmentNames.length + winningIndex) * itemHeight);
-
-    // Fast 0.5s slot snap transition
-    reel.style.transition = "transform 0.5s cubic-bezier(0.1, 0.9, 0.2, 1.1)";
-    reel.style.transform = `translateY(${targetOffset}px)`;
+    // Fast 0.5 seconds spin with cubic-bezier for mechanical game feel
+    reel.style.transition = "transform 0.5s cubic-bezier(0.15, 0.85, 0.25, 1.15)";
+    reel.style.transform = `translateY(${targetTranslateY}px)`;
 
     setTimeout(() => {
         winnerDisplay.innerText = `WINNER: ${departmentNames[winningIndex]}!`;
         winnerDisplay.style.color = "#1863dc";
         
+        // Add win punch effect to container
         const slotWindow = slideElement.querySelector('.forza-slot-window');
-        if (slotWindow) {
-            slotWindow.classList.add('win-flash');
-            setTimeout(() => slotWindow.classList.remove('win-flash'), 600);
-        }
+        slotWindow.classList.add('win-flash');
+        setTimeout(() => slotWindow.classList.remove('win-flash'), 600);
     }, 500);
 }
 

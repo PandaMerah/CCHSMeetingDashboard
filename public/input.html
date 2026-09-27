@@ -1,284 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Care Clinics - Submit Weekly Update</title>
-    <style>
-        :root {
-            --cc-navy: #112349;
-            --cc-blue: #1863dc;
-            --cc-light-bg: #f0f4f8;
-            --cc-border: #d1d5db;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--cc-light-bg);
-            color: #111827;
-            padding: 40px 20px;
-            margin: 0;
-        }
-
-        .container-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            max-width: 1200px;
-            margin: auto;
-        }
-
-        .card-panel {
-            background: #ffffff;
-            padding: 36px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(17, 35, 73, 0.08);
-            border: 1px solid var(--cc-border);
-        }
-
-        .header {
-            border-bottom: 2px solid var(--cc-light-bg);
-            padding-bottom: 16px;
-            margin-bottom: 24px;
-        }
-
-        h2 { color: var(--cc-navy); margin: 0; }
-
-        .history-box {
-            background: var(--cc-light-bg);
-            padding: 16px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #e5e7eb;
-        }
-
-        label {
-            display: block;
-            margin-top: 14px;
-            font-weight: 600;
-            color: var(--cc-navy);
-        }
-
-        input[type="text"], select, textarea {
-            width: 100%;
-            padding: 12px;
-            box-sizing: border-box;
-            margin-top: 6px;
-            border-radius: 8px;
-            border: 1px solid var(--cc-border);
-            font-size: 1rem;
-            background: #ffffff;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
-
-        button {
-            background: var(--cc-blue);
-            color: white;
-            font-weight: bold;
-            border: none;
-            padding: 16px;
-            cursor: pointer;
-            border-radius: 8px;
-            font-size: 1.05rem;
-            transition: background 0.2s;
-        }
-
-        button:hover { background: #114fb3; }
-
-        button.btn-clear {
-            background: #e5e7eb;
-            color: #374151;
-            width: 35%;
-        }
-
-        button.btn-clear:hover { background: #d1d5db; }
-
-        /* Preview Card Mirror */
-        .preview-tv-card {
-            background: #ffffff;
-            border: 2px solid var(--cc-blue);
-            border-radius: 18px;
-            padding: 28px;
-            box-shadow: 0 15px 30px rgba(17, 35, 73, 0.1);
-        }
-
-        .cc-card-tag {
-            display: inline-block;
-            background: rgba(24, 99, 220, 0.1);
-            color: var(--cc-blue);
-            font-size: 0.95rem;
-            font-weight: 700;
-            padding: 6px 14px;
-            border-radius: 20px;
-            margin-bottom: 16px;
-            text-transform: uppercase;
-        }
-
-        #status {
-            font-weight: bold;
-            font-size: 1rem;
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 8px;
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Staff Meeting Submission - CCHS</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div class="container-layout">
-        <!-- Input Form Panel -->
-        <div class="card-panel">
-            <div class="header">
-                <h2>Submit Department Update</h2>
-                <span style="color: #6b7280;">Care Clinics Weekly Alignment</span>
+<body class="form-body">
+  <div class="form-wrapper">
+    <header class="form-header">
+      <img src="careclinic-logo.webp" alt="Care Clinics Logo" class="brand-logo-small" onerror="this.style.display='none'">
+      <h2>Staff Meeting Submission</h2>
+      <p>Submit your department updates and questions for the upcoming management meeting.</p>
+    </header>
+
+    <div id="alertBox" class="alert-box" style="display: none;"></div>
+
+    <form id="submissionForm" class="submission-form">
+      <div class="form-group">
+        <label for="departmentSelect">Select Department <span class="required">*</span></label>
+        <select id="departmentSelect" required>
+          <option value="" disabled selected>Loading departments...</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="updateText">Monthly Updates & Activities <span class="required">*</span></label>
+        <textarea id="updateText" rows="6" placeholder="- Key updates for this month&#10;- Action items completed&#10;- Ongoing initiatives" required></textarea>
+        <small class="hint">Tip: Start lines with "-" or "•" to display bullet points on the TV dashboard.</small>
+      </div>
+
+      <div class="form-group">
+        <label for="questionText">Questions / Matters Arising (Q&A)</label>
+        <textarea id="questionText" rows="3" placeholder="Optional: Any questions or requests for management? (Enter 'N/A' if none)"></textarea>
+      </div>
+
+      <button type="submit" id="submitBtn" class="primary-btn">Broadcast Update to TV</button>
+    </form>
+
+    <section class="recent-history-section">
+      <h3>Recent Submissions</h3>
+      <div id="recentHistoryList" class="history-preview-list">Loading submissions...</div>
+    </section>
+  </div>
+
+  <script type="module">
+    import { db, ref, onValue, get, set } from './firebase.js';
+
+    const deptSelect = document.getElementById('departmentSelect');
+    const form = document.getElementById('submissionForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const alertBox = document.getElementById('alertBox');
+    const recentHistoryList = document.getElementById('recentHistoryList');
+
+    function showAlert(message, isError = false) {
+      alertBox.textContent = message;
+      alertBox.className = `alert-box ${isError ? 'error' : 'success'}`;
+      alertBox.style.display = 'block';
+      setTimeout(() => { alertBox.style.display = 'none'; }, 4000);
+    }
+
+    // Default fallback departments if database is empty
+    const DEFAULT_DEPTS = [
+      "CEO OFFICE", "ADMIN", "BUSINESS LEGAL", "PMI TEAM", "BUSINESS DEVELOPMENT",
+      "CORPORATE HEALTH", "FINANCE", "ACCOUNT", "PROCUREMENT", "TALENT DEVELOPMENT",
+      "CLINICAL GOVERNANCE", "OPERATION", "HR", "IT", "TPP SYSTMONE", "FRANCHISE", "FACILITY"
+    ];
+
+    // Listen for available departments and recent history
+    onValue(ref(db, '/'), (snapshot) => {
+      const data = snapshot.val() || {};
+      const depts = data.departments ? Object.keys(data.departments) : DEFAULT_DEPTS;
+      
+      const currentSelection = deptSelect.value;
+      deptSelect.innerHTML = '<option value="" disabled selected>-- Select your department --</option>' +
+        depts.map(d => `<option value="${d}">${d}</option>`).join('');
+      
+      if (currentSelection && depts.includes(currentSelection)) {
+        deptSelect.value = currentSelection;
+      }
+
+      // Render recent history
+      const history = data.history || [];
+      if (history.length === 0) {
+        recentHistoryList.innerHTML = '<p class="empty-note">No recent submissions found.</p>';
+      } else {
+        recentHistoryList.innerHTML = history.slice(0, 5).map(item => `
+          <div class="history-item-preview">
+            <div class="hist-header">
+              <strong>${item.department}</strong>
+              <small>${item.dateString}</small>
             </div>
+            <p class="hist-text">${item.update}</p>
+          </div>
+        `).join('');
+      }
+    });
 
-            <div id="status"></div>
+    // Form Submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const department = deptSelect.value;
+      const updateText = document.getElementById('updateText').value.trim();
+      const questionText = document.getElementById('questionText').value.trim() || 'N/A';
 
-            <label>Select Department:</label>
-            <select id="department" onchange="loadHistoryDropdown(); populateCurrentDeptData(); updatePreview();"></select>
+      if (!department) {
+        showAlert("Please select a department.", true);
+        return;
+      }
 
-            <div class="history-box">
-                <label style="margin-top: 0;">Load Previous Update (Optional):</label>
-                <select id="historyDropdown" onchange="populateFromHistory()"></select>
-            </div>
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Broadcasting...";
 
-            <label>Weekly Update Text:</label>
-            <textarea id="updateText" rows="5" placeholder="Enter your department's weekly update..." oninput="updatePreview()"></textarea>
+      try {
+        const rootRef = ref(db, '/');
+        const snapshot = await get(rootRef);
+        const data = snapshot.val() || { config: {}, departments: {}, history: [] };
 
-            <label>Department Specific Question (For Q&A):</label>
-            <input type="text" id="questionText" placeholder="Enter question for other departments..." oninput="updatePreview()">
+        if (!data.departments) data.departments = {};
+        data.departments[department] = {
+          update: updateText,
+          question: questionText
+        };
 
-            <div class="btn-group">
-                <button type="button" class="btn-clear" onclick="clearInputFields()">Clear Text</button>
-                <button type="button" style="flex: 1;" onclick="submitUpdate()">Save & Broadcast Live to TV</button>
-            </div>
-        </div>
+        if (!data.history) data.history = [];
+        data.history.unshift({
+          timestamp: Date.now(),
+          dateString: new Date().toLocaleString('en-MY'),
+          department: department,
+          update: updateText,
+          question: questionText
+        });
 
-        <!-- Live Preview Panel -->
-        <div class="card-panel" style="background: var(--cc-light-bg);">
-            <div class="header">
-                <h2>Live TV Slide Preview</h2>
-                <span style="color: #6b7280;">Real-time view of broadcast slide</span>
-            </div>
+        await set(rootRef, data);
 
-            <div class="preview-tv-card">
-                <div class="cc-card-tag" id="prevTag">IT Support</div>
-                <h3 style="color: var(--cc-blue); margin-top: 0;">Weekly Department Update</h3>
-                <p id="prevUpdate" style="font-size: 1.25rem; color: #111827; line-height: 1.5; min-height: 100px; white-space: pre-line;">Your update text will appear here...</p>
-
-                <hr style="border: none; border-top: 1px solid var(--cc-border); margin: 20px 0;">
-
-                <div class="cc-card-tag" style="background: rgba(245, 158, 11, 0.15); color: #d97706;">Q&A Question</div>
-                <p id="prevQuestion" style="font-size: 1.1rem; color: #111827; margin: 0; white-space: pre-line;">Your question will appear here...</p>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let fullHistory = [];
-        let departmentData = {};
-
-        async function loadData() {
-            const res = await fetch('/api/data');
-            const data = await res.json();
-
-            fullHistory = data.history || [];
-            departmentData = data.departments || {};
-
-            const deptSelect = document.getElementById('department');
-            deptSelect.innerHTML = Object.keys(departmentData).map(d => `<option value="${d}">${d}</option>`).join('');
-
-            loadHistoryDropdown();
-            populateCurrentDeptData();
-            updatePreview();
-        }
-
-        function populateCurrentDeptData() {
-            const selectedDept = document.getElementById('department').value;
-            if (departmentData[selectedDept]) {
-                document.getElementById('updateText').value = departmentData[selectedDept].update || "";
-                document.getElementById('questionText').value = departmentData[selectedDept].question || "";
-            }
-        }
-
-        function loadHistoryDropdown() {
-            const dept = document.getElementById('department').value;
-            const dropdown = document.getElementById('historyDropdown');
-            dropdown.innerHTML = '<option value="">-- Select a past update --</option>';
-
-            const deptHistory = fullHistory.filter(h => h.department === dept);
-            deptHistory.forEach((item, index) => {
-                dropdown.innerHTML += `<option value="${index}">${item.dateString}</option>`;
-            });
-        }
-
-        function populateFromHistory() {
-            const dropdown = document.getElementById('historyDropdown');
-            const dept = document.getElementById('department').value;
-            const deptHistory = fullHistory.filter(h => h.department === dept);
-
-            if (dropdown.value !== "") {
-                const selectedData = deptHistory[dropdown.value];
-                document.getElementById('updateText').value = selectedData.update;
-                document.getElementById('questionText').value = selectedData.question;
-                updatePreview();
-            }
-        }
-
-        function clearInputFields() {
-            document.getElementById('updateText').value = "";
-            document.getElementById('questionText').value = "";
-            document.getElementById('historyDropdown').value = "";
-            updatePreview();
-        }
-
-        function updatePreview() {
-            const dept = document.getElementById('department').value || "Department";
-            document.getElementById('prevTag').innerText = dept;
-            document.getElementById('prevUpdate').innerText = document.getElementById('updateText').value || "Your update text will appear here...";
-            document.getElementById('prevQuestion').innerText = document.getElementById('questionText').value || "Your question will appear here...";
-        }
-
-        async function submitUpdate() {
-            const payload = {
-                department: document.getElementById('department').value,
-                updateText: document.getElementById('updateText').value,
-                questionText: document.getElementById('questionText').value
-            };
-
-            try {
-                const response = await fetch('/api/update', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                const res = await response.json();
-                showStatus(res.message, false);
-                await loadData();
-            } catch (err) {
-                showStatus("Error submitting update.", true);
-            }
-        }
-
-        function showStatus(msg, isError) {
-            const statusEl = document.getElementById('status');
-            statusEl.innerText = msg;
-            statusEl.style.display = 'block';
-            statusEl.style.background = isError ? '#fde8e8' : '#e6f4ea';
-            statusEl.style.color = isError ? '#9b1c1c' : '#0e6251';
-            statusEl.style.border = `1px solid ${isError ? '#f8b4b4' : '#a3e0b5'}`;
-
-            setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
-        }
-
-        loadData();
-    </script>
+        showAlert("Success! Update broadcasted to dashboard.");
+        document.getElementById('updateText').value = '';
+        document.getElementById('questionText').value = '';
+      } catch (err) {
+        console.error(err);
+        showAlert("Error saving submission: " + err.message, true);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Broadcast Update to TV";
+      }
+    });
+  </script>
 </body>
 </html>

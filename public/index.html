@@ -1,51 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0">
-    <title>Care Clinics Group - Weekly Alignment</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="/socket.io/socket.io.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCHS Meeting Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
-<body>
-    <div class="app-layout">
-        <!-- Left Navy Sidebar with Logo, Clock & Date -->
-        <div class="sidebar">
-            <div>
-                <div class="brand-header">
-                    <img src="/careclinic-logo.webp" alt="Care Clinics Logo" class="sidebar-logo">
-                    <div class="brand-subtitle">Weekly Alignment</div>
-                    
-                    <div class="sidebar-clock-container">
-                        <div class="sidebar-time" id="sidebar-time">--:--:--</div>
-                        <div class="sidebar-date" id="sidebar-date">-----, -- ---- ----</div>
-                    </div>
-                </div>
-
-                <!-- Auto-generating Slide Navigation -->
-                <div class="dept-pill-list" id="sidebar-menu"></div>
-            </div>
-
-            <div class="sidebar-footer">
-                Careclinics Healthcare Services HQ
-            </div>
-        </div>
-
-        <!-- Right Main Viewport -->
-        <div class="main-viewport">
-            <div id="slides-container"></div>
-        </div>
+<body class="dashboard-body">
+  <!-- Header Banner -->
+  <header class="dashboard-header">
+    <div class="header-brand">
+      <img src="careclinic-logo.webp" alt="Care Clinics Logo" class="brand-logo" onerror="this.style.display='none'">
+      <div class="header-titles">
+        <h1 class="main-title">CARE CLINICS HEALTHCARE SERVICES</h1>
+        <h2 class="sub-title">Monthly Management Meeting Dashboard</h2>
+      </div>
     </div>
-
-    <!-- On-Screen TV Navigation Overlay -->
-    <div class="tv-controls">
-        <button onclick="changeSlide(-1)">❮</button>
-        <span id="slide-indicator">1 / 1</span>
-        <button onclick="changeSlide(1)">❯</button>
-        <button onclick="toggleFullScreen()">⛶</button>
-        <button id="btn-autoplay" onclick="toggleAutoPlay()">▶ Auto</button>
+    <div class="header-meta">
+      <div id="liveClock" class="live-clock">--:--:--</div>
+      <div id="liveDate" class="live-date">Loading...</div>
+      <div class="live-pill"><span class="pulse-dot"></span> LIVE SYNC</div>
     </div>
+  </header>
 
-    <script src="app.js"></script>
+  <!-- Vision & Mission Banner -->
+  <section id="visionMissionSection" class="banner-section vision-mission-banner" style="display: none;">
+    <div class="vm-card">
+      <span class="vm-label">VISION</span>
+      <p id="visionText" class="vm-text"></p>
+    </div>
+    <div class="vm-card">
+      <span class="vm-label">MISSION</span>
+      <p id="missionText" class="vm-text"></p>
+    </div>
+  </section>
+
+  <!-- Daily Phrases Banner -->
+  <section id="dailyPhrasesSection" class="banner-section phrases-banner" style="display: none;">
+    <span class="banner-tag">CORE VALUE</span>
+    <div id="phrasesContainer" class="phrases-container"></div>
+  </section>
+
+  <!-- Last Minute Speech Banner -->
+  <section id="lastMinuteSpeechSection" class="banner-section speech-banner" style="display: none;">
+    <span class="banner-tag highlight">ANNOUNCEMENT</span>
+    <p id="lastMinuteSpeechText" class="speech-text"></p>
+  </section>
+
+  <!-- Main Departments Grid -->
+  <main class="dashboard-main">
+    <div id="departmentsGrid" class="departments-grid">
+      <div class="loading-state">Connecting to dashboard feed...</div>
+    </div>
+  </main>
+
+  <footer class="dashboard-footer">
+    <span>Staff Input Portal: <code>/input.html</code></span>
+    <span>Admin Management: <code>/admin.html</code></span>
+  </footer>
+
+  <script type="module" src="app.js"></script>
 </body>
 </html>
